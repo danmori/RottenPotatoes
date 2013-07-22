@@ -8,18 +8,15 @@ class MoviesController < ApplicationController
 
   def index
 
+    if params[:sort].nil? && params[:ratings].nil? && (!session[:sort].nil? || !session[:ratings].nil?)
+      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+    end
+
     @sort = params[:sort]
     @ratings = params[:ratings]
     
-    #ratings = @ratings.nil? ? Movie.ratings : @ratings.keys
+    ratings = @ratings.nil? ? Movie.ratings : @ratings.keys
 
-    if @ratings.nil?
-      ratings = Movie.ratings 
-    else
-      ratings = @ratings.keys
-    end
-
-    
     @all_ratings = Movie.ratings.inject({}) do |results, element|
       results[element] = @ratings.nil? ? true : @ratings.has_key?(element)
       results
@@ -31,6 +28,8 @@ class MoviesController < ApplicationController
       @movies = Movie.find_all_by_rating(ratings)
     end
 
+    session[:sort] = @sort
+    session[:ratings] = @ratings    
 
   end
 
