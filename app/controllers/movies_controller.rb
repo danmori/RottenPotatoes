@@ -19,10 +19,10 @@ class MoviesController < ApplicationController
       ratings = @ratings.keys
     end
 
-
-    @all_ratings = Movie.ratings.inject(Hash.new) do |all_ratings, rating|
-      all_ratings[rating] = @ratings.nil? ? false : @ratings.has_key?(rating)
-      all_ratings
+    
+    @all_ratings = Movie.ratings.inject({}) do |results, element|
+      results[element] = @ratings.nil? ? true : @ratings.has_key?(element)
+      results
     end
 
     if !@sort.nil?
