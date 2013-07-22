@@ -11,18 +11,27 @@ class MoviesController < ApplicationController
     @sort = params[:sort]
     @ratings = params[:ratings]
     
-    ratings = @ratings.nil? ? Movie.ratings : @ratings.keys
+    #ratings = @ratings.nil? ? Movie.ratings : @ratings.keys
 
-    @all_ratings = ratings.inject(Hash.new) do |all, rating|
-      all[rating] = @ratings.nil? ? false : @ratings.has_key?(rating)
-      all
+    if @ratings.nil?
+      ratings = Movie.ratings 
+    else
+      ratings = @ratings.keys
+    end
+
+
+    @all_ratings = Movie.ratings.inject(Hash.new) do |all_ratings, rating|
+      all_ratings[rating] = @ratings.nil? ? false : @ratings.has_key?(rating)
+      all_ratings
     end
 
     if !@sort.nil?
-      @movies = Movie.order("#{@sort} ASC")
+      @movies = Movie.order("#{@sort} ASC").find_all_by_rating(ratings)
     else
-      @movies = Movie.find_all_by_ratings(ratings)
+      @movies = Movie.find_all_by_rating(ratings)
     end
+
+
   end
 
   def new
